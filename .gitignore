@@ -1,0 +1,25 @@
+# Created by .ignore support plugin (hsz.mobi)
+### JetBrains template
+*.iml
+
+## Directory-based project format:
+.idea/
+
+
+## File-based project format:
+*.ipr
+*.iws
+
+## Plugin-specific files:
+
+# IntelliJ
+/out/
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+### Sass template
+.sass-cache
+*.css.map
+
+
