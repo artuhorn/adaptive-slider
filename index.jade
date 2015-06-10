@@ -1,0 +1,23 @@
+doctype html
+html
+    head
+        title Adaptive slider
+        link(rel="styleSheet" href="css/styles.css")
+    body
+
+        div.slider
+            //div.slider__l-container
+            ul.slider__list
+                li.slider__item.slider__item--active: img.slider__image(src="images/slider-image-1.jpg" alt="")
+                li.slider__item: img.slider__image(src="images/slider-image-2.jpg"  alt="")
+                li.slider__item: img.slider__image(src="images/slider-image-3.jpg"  alt="")
+                li.slider__item: img.slider__image(src="images/slider-image-4.jpg"  alt="")
+
+            ul.slider__toggles
+
+            div.slider__controls
+                div.slider__controls-button.slider__controls-button--next >
+                div.slider__controls-button.slider__controls-button--prev <
+
+        script(src="//code.jquery.com/jquery-2.1.4.min.js")
+        script(src="js/slider.js")
