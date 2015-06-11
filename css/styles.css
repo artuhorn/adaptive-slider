@@ -1,4 +1,4 @@
-/* SLIDER */
+/* BASIC STYLES */
 * {
   margin: 0;
   padding: 0;
@@ -10,6 +10,7 @@ body {
   padding: 20px 50px;
 }
 
+/* SLIDER */
 .slider {
   background: gray;
   display: inline-block;
