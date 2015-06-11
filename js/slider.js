@@ -94,6 +94,9 @@ var Slider = (function() {
             leftPosition = 0,
             offset       = 0;
 
+
+         if (slides.length <= 1) return;
+
          if (direction === 'forward') {
             leftPosition = slideWidth;
             offset       = -slideWidth;

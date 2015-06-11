@@ -20,12 +20,17 @@ body {
   user-select: none;
   width: 100%;
 }
+.slider__l-container {
+  display: inline-block;
+  margin: 0 auto;
+  width: 500px;
+}
 .slider__list {
   list-style: none;
   margin: 0 auto;
   overflow: hidden;
   position: relative;
-  width: 30%;
+  width: 100%;
 }
 .slider__item {
   left: 0;

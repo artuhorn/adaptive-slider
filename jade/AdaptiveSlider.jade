@@ -1,0 +1,18 @@
+
+mixin AdaptiveSlider(images)
+   //- Slider block
+   div.slider
+      //- Slides list
+      ul.slider__list
+         - for (var i = 0; i < images.length; i++)
+             //- Slide
+             li.slider__item( class=(i == 0 ? "slider__item--active" : "") ): img.slider__image( src=images[i] alt="" width="100%" )
+
+      //- Toggles. Create dynamically with JS
+      ul.slider__toggles
+
+      //- Arrows
+      div.slider__controls
+         div.slider__controls-button.slider__controls-button--next &gt
+         div.slider__controls-button.slider__controls-button--prev &lt
+
