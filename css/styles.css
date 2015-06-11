@@ -24,7 +24,7 @@ body {
 .slider__l-container {
   display: inline-block;
   margin: 0 auto;
-  width: 500px;
+  width: 40%;
 }
 .slider__list {
   list-style: none;
