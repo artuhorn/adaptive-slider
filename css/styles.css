@@ -19,12 +19,10 @@ body {
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
-  width: 100%;
 }
 .slider__l-container {
   display: inline-block;
   margin: 0 auto;
-  width: 40%;
 }
 .slider__list {
   list-style: none;
@@ -49,7 +47,6 @@ body {
 }
 .slider__image {
   display: block;
-  width: 100%;
 }
 .slider__toggles {
   bottom: 5%;

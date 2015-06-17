@@ -5,9 +5,73 @@
 var Slider = (function() {
 
    var
-      canAnimate         = true,
-      timerID            = 0,
-      autoSwitchInterval = 3000;
+      autoSwitchInterval  = 3000,
+      animatingContainers = [],
+      timers              = [];
+
+   /*
+    *  CAN ANIMATE
+    * */
+   function canAnimate(container) {
+      var element = $(container)[0];
+      for (var i = 0; i < animatingContainers.length; i++) {
+         if (animatingContainers[i] === element) {
+            return false;
+         }
+      }
+
+      return true;
+   }
+
+   /*
+    *  SET ANIMATION STATE
+    * */
+   function setAnimationState(container, isAnimation) {
+      var element = $(container)[0];
+      if (isAnimation) {
+         animatingContainers.push(element);
+      } else {
+         animatingContainers.splice(animatingContainers.indexOf(element), 1);
+      }
+   }
+
+   /*
+    *  SET TIMER ID
+    * */
+   function setTimerID(container, timerID) {
+
+      var element = $(container)[0];
+
+      function indexOf() {
+         for (var i = 0; i < timers.length; i++) {
+            if (timers[i][0] === element) {
+               return i;
+            }
+         }
+
+         return -1;
+      }
+
+      var index = indexOf();
+      if (timerID) {
+         // Set timer id
+         if (index > - 1) {
+            clearInterval(timers[index][1]);
+            timers[index][1] = timerID;
+
+         } else {
+            timers.push([element, timerID]);
+         }
+
+      } else {
+         // Clear interval
+         if (index > -1) {
+            clearInterval(timers[index][1]);
+            timers.splice(index, 1);
+         }
+      }
+   }
+
 
    return {
 
@@ -17,38 +81,42 @@ var Slider = (function() {
       init: function() {
 
          // Create slider toggles
-         Slider.createToggles();
+         Slider._createToggles();
 
-         // Enable auto switch
-         Slider.setAutoSwitch(true);
+         // Create slider arrows
+         Slider._createControls();
 
-         // Click on slider button
+         // Run auto switch for each slider on page
+         Slider._runAutoSwitch();
+
+         // Click on controls
          $('.slider__controls-button').on('click', function(e) {
             e.preventDefault();
 
-            Slider.resetTimer();
-
             var
                $this       = $(this),
-               slides      = $this.closest('.slider').find('.slider__item'),
+               container   = $this.closest('.slider'),
+               slides      = container.find('.slider__item'),
                activeSlide = slides.filter('.slider__item--active'),
                nextSlide   = activeSlide.next(),
                prevSlide   = activeSlide.prev(),
                firstSlide  = slides.first(),
                lastSlide   = slides.last();
 
+            Slider._resetTimer(container);
+
             if ($this.hasClass('slider__controls-button--next')) {
                if (nextSlide.length) {
-                  Slider.moveSlide(nextSlide, 'forward');
+                  Slider._moveSlide(nextSlide, 'forward');
                } else {
-                  Slider.moveSlide(firstSlide, 'forward');
+                  Slider._moveSlide(firstSlide, 'forward');
                }
 
             } else {
                if (prevSlide.length) {
-                  Slider.moveSlide(prevSlide, 'backward');
+                  Slider._moveSlide(prevSlide, 'backward');
                } else {
-                  Slider.moveSlide(lastSlide, 'backward');
+                  Slider._moveSlide(lastSlide, 'backward');
                }
             }
 
@@ -61,14 +129,15 @@ var Slider = (function() {
 
             var
                $this         = $(this),
+               container     = $this.closest('.slider'),
                toggles       = $this.closest('.slider__toggles').find('.slider__toggle'),
                activeToggle  = toggles.filter('.slider__toggle--active'),
                direction     = ($this.index() > activeToggle.index()) ? 'forward' : 'backward',
                selectedSlide = $this.closest('.slider').find('.slider__item').eq($this.index());
 
             if (!$this.hasClass('slider__toggle--active')) {
-               Slider.resetTimer();
-               Slider.moveSlide(selectedSlide, direction);
+               Slider._resetTimer(container);
+               Slider._moveSlide(selectedSlide, direction);
             }
 
          }); // -> end click on toggle
@@ -79,11 +148,7 @@ var Slider = (function() {
       /*
       * MOVE SLIDE
       * */
-      moveSlide: function(selectedSlide, direction) {
-
-         if (!canAnimate) return;
-
-         canAnimate = false;
+      _moveSlide: function(selectedSlide, direction) {
 
          var
             container    = selectedSlide.closest('.slider'),
@@ -94,6 +159,11 @@ var Slider = (function() {
             leftPosition = 0,
             offset       = 0;
 
+         if (!canAnimate(container)) {
+            return;
+         } else {
+            setAnimationState(container, true);
+         }
 
          if (slides.length <= 1) return;
 
@@ -113,7 +183,9 @@ var Slider = (function() {
          activeSlide.animate({left: offset}, duration);
 
          selectedSlide.animate({left: 0}, duration, function() {
-            var $this = $(this);
+            var
+               $this        = $(this),
+               container    = $this.closest('.slider');
 
             slides
                .css('left', 0)
@@ -121,45 +193,73 @@ var Slider = (function() {
 
             $this.toggleClass('slider__item--selected slider__item--active');
 
-            Slider.setActiveToggle(container.find('.slider__toggles'));
+            Slider._setActiveToggle(container.find('.slider__toggles'));
 
-            canAnimate = true;
+            setAnimationState(container, false);
 
          });
 
-      }, // -> end moveSlide
+      }, // -> end _moveSlide
 
 
       /*
       * CREATE TOGGLES
       * */
-      createToggles: function() {
+      _createToggles: function() {
 
-         var container = $('.slider');
+         var containers = $('.slider');
 
          var toggleMarkup = '<li class="slider__toggle"></li>';
 
-         container.each(function() {
+         containers.each(function() {
             var
                $this            = $(this),
                slides           = $this.find('.slider__item'),
-               togglesContainer = $this.find('.slider__toggles');
+               togglesContainer = $this.find('.slider__toggles'),
+               useToggles       = $this.data("toggles");
+
+            if (!useToggles) return;
 
             for (var i = 0; i < slides.length; i++) {
                togglesContainer.append(toggleMarkup);
             }
 
-            Slider.setActiveToggle(togglesContainer);
+            Slider._setActiveToggle(togglesContainer);
 
          }); // -> end each
 
-      }, // -> end createToggles
+      }, // -> end _createToggles
+
+
+      /*
+       * CREATE ARROWS
+       * */
+      _createControls: function() {
+
+         var containers = $('.slider');
+
+         var controlsMarkup = '\
+            <div class="slider__controls-button slider__controls-button--next">&gt</div> \
+            <div class="slider__controls-button slider__controls-button--prev">&lt</div>';
+
+         containers.each(function() {
+            var
+               $this             = $(this),
+               controlsContainer = $this.find('.slider__controls'),
+               useControls       = $this.data("controls");
+
+            if (useControls)
+               controlsContainer.append(controlsMarkup);
+
+         }); // -> end each
+
+      }, // -> end _createControls
 
 
       /*
       * SET ACTIVE TOGGLE
       * */
-      setActiveToggle: function(togglesContainer) {
+      _setActiveToggle: function(togglesContainer) {
 
          var slides = togglesContainer.closest('.slider').find('.slider__item');
 
@@ -170,45 +270,68 @@ var Slider = (function() {
             .siblings()
             .removeClass('slider__toggle--active');
 
-      }, // -> end setActiveToggle
+      }, // -> end _setActiveToggle
+
+
+      /*
+       * RUN AUTO SWITCH
+       * */
+      _runAutoSwitch: function() {
+
+         var containers = $('.slider');
+
+         containers.each(function() {
+            var
+               $this         = $(this),
+               useAutoSwitch = $this.data("autoswitch");
+
+            if (useAutoSwitch) {
+               Slider._setAutoSwitch($this, true);
+            }
+         }); // end each
+
+      }, // -> end _runAutoSwitch
 
 
       /*
       * SET AUTO SWITCH
       * */
-      setAutoSwitch: function(enable) {
+      _setAutoSwitch: function(container, enable) {
 
          if (enable) {
-            timerID = setInterval(function () {
+            timerID = setInterval(function (data) {
+
                var
-                  slides      = $('.slider__list .slider__item'),
+                  slides      = container.find('.slider__item'),
                   activeSlide = slides.filter('.slider__item--active'),
                   nextSlide   = activeSlide.next(),
                   firstSlide  = slides.first();
 
                if (nextSlide.length) {
-                  Slider.moveSlide(nextSlide, 'forward');
+                  Slider._moveSlide(nextSlide, 'forward');
                } else {
-                  Slider.moveSlide(firstSlide, 'forward');
+                  Slider._moveSlide(firstSlide, 'forward');
                }
 
             }, autoSwitchInterval);
 
+            setTimerID(container, timerID);
+
          } else {
-            if (timerID) clearInterval(timerID);
+            setTimerID(container, null);
          }
 
-      }, // -> end setAutoSwitch
+      }, // -> end _setAutoSwitch
 
       /*
       * RESET TIMER
       * */
-      resetTimer: function() {
-         if (timerID) {
-            Slider.setAutoSwitch(false);
-            Slider.setAutoSwitch(true);
+      _resetTimer: function(container) {
+         if (container) {
+            Slider._setAutoSwitch(container, false);
+            Slider._setAutoSwitch(container, true);
          }
-      } // -> end resetTimer
+      } // -> end _resetTimer
    }
 
 }());

@@ -12,6 +12,10 @@ html
         //- Container for slider positioning
         div.slider__l-container
             - var images = ["images/slider-image-1.jpg", "images/slider-image-2.jpg", "images/slider-image-3.jpg", "images/slider-image-4.jpg"];
+            +AdaptiveSlider(images, {controls: "false"})
+
+        div.slider__l-container
+            - var images = ["images/slider-image-1.jpg", "images/slider-image-2.jpg", "images/slider-image-3.jpg", "images/slider-image-4.jpg"];
             +AdaptiveSlider(images)
 
         script(src="//code.jquery.com/jquery-2.1.4.min.js" defer)
