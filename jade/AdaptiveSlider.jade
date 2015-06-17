@@ -7,15 +7,16 @@ mixin AdaptiveSlider(images, options)
 
     //- Slider block
     div.slider(data-toggles=toggles data-controls=controls data-autoswitch=autoswitch)
-        //- Slides list
-        ul.slider__list
-            - for (var i = 0; i < images.length; i++)
-                //- Slide
-                li.slider__item( class=(i == 0 ? "slider__item--active" : "") ): img.slider__image( src=images[i] alt="" width="100%" )
+        div.slider__container
+            //- Slides list
+            ul.slider__list
+                - for (var i = 0; i < images.length; i++)
+                    //- Slide
+                    li.slider__item( class=(i == 0 ? "slider__item--active" : "") )
+                        img.slider__image( src=images[i] alt="" width="100%" )
 
-        //- Toggles. Create dynamically with JS
-        ul.slider__toggles
+            //- Toggles. Create dynamically with JS
+            ul.slider__toggles
 
         //- Arrows. Create dynamically with JS
         div.slider__controls
-

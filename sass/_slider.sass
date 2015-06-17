@@ -3,17 +3,19 @@
 .slider
   background: gray
   display: inline-block
-  overflow: hidden
   position: relative
   -webkit-user-select: none
   -moz-user-select: none
   user-select: none
-  //width: 100%
+  width: 100%
+  min-width: 300px
 
-  &__l-container
-    display: inline-block
+  // Container for slides and toggles
+  &__container
     margin: 0 auto
-    //width: 80%
+    overflow: hidden
+    position: relative
+    width: 100%
 
   // Container for slides
   &__list
@@ -21,7 +23,6 @@
     margin: 0 auto
     overflow: hidden
     position: relative
-    width: 100%
 
   // Slide itself
   &__item
@@ -38,7 +39,6 @@
 
   &__image
     display: block
-    //max-width: 100%
 
   // Toggles
   &__toggles
