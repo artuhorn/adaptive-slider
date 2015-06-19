@@ -4,7 +4,7 @@
 
 var Slider = (function() {
 
-   var autoSwitchInterval  = 3000,
+   var autoSwitchInterval  = 5000,
        animatingContainers = [],
        timers              = [];
 
@@ -74,11 +74,20 @@ var Slider = (function() {
    } // -> end setTimerID
 
 
+   /*
+    * GET CHILDREN ELEMENTS
+    * */
+   function getChildrenElements(container, parentSelector, childrenSelector) {
+      return container.find(childrenSelector).filter(function(index) {
+         return this.closest(parentSelector) === container[0];
+      })
+   }
+
    return {
 
       /*
-      *  INIT
-      * */
+       *  INIT
+       * */
       init: function() {
 
          // Create slider toggles
@@ -91,13 +100,13 @@ var Slider = (function() {
          Slider._runAutoSwitch();
 
          // Click on controls
-         $('.slider__controls-button').on('click', function(e) {
+         $('.adaptive-slider__controls-button').on('click', function(e) {
             e.preventDefault();
 
             var $this       = $(this),
-                container   = $this.closest('.slider'),
-                slides      = container.find('.slider__item'),
-                activeSlide = slides.filter('.slider__item--active'),
+                container   = $this.closest('.adaptive-slider'),
+                slides      = getChildrenElements(container, '.adaptive-slider', '.adaptive-slider__item'),
+                activeSlide = slides.filter('.adaptive-slider__item--active'),
                 nextSlide   = activeSlide.next(),
                 prevSlide   = activeSlide.prev(),
                 firstSlide  = slides.first(),
@@ -105,7 +114,7 @@ var Slider = (function() {
 
             Slider._resetTimer(container);
 
-            if ($this.hasClass('slider__controls-button--next')) {
+            if ($this.hasClass('adaptive-slider__controls-button--next')) {
                if (nextSlide.length) {
                   Slider._moveSlide(nextSlide, 'forward');
                } else {
@@ -124,17 +133,17 @@ var Slider = (function() {
 
 
          // Click on toggle
-         $('.slider__toggle').on('click', function(e) {
+         $('.adaptive-slider__toggle').on('click', function(e) {
             e.preventDefault();
 
             var $this         = $(this),
-                container     = $this.closest('.slider'),
-                toggles       = $this.closest('.slider__toggles').find('.slider__toggle'),
-                activeToggle  = toggles.filter('.slider__toggle--active'),
+                container     = $this.closest('.adaptive-slider'),
+                toggles       = $this.closest('.adaptive-slider__toggles').find('.adaptive-slider__toggle'),
+                activeToggle  = toggles.filter('.adaptive-slider__toggle--active'),
                 direction     = ($this.index() > activeToggle.index()) ? 'forward' : 'backward',
-                selectedSlide = $this.closest('.slider').find('.slider__item').eq($this.index());
+                selectedSlide = $this.closest('.adaptive-slider').find('.adaptive-slider__item').eq($this.index());
 
-            if (!$this.hasClass('slider__toggle--active')) {
+            if (!$this.hasClass('adaptive-slider__toggle--active')) {
                Slider._resetTimer(container);
                Slider._moveSlide(selectedSlide, direction);
             }
@@ -145,13 +154,13 @@ var Slider = (function() {
 
 
       /*
-      * MOVE SLIDE
-      * */
+       * MOVE SLIDE
+       * */
       _moveSlide: function(selectedSlide, direction) {
 
-         var container    = selectedSlide.closest('.slider'),
-             slides       = container.find('.slider__item'),
-             activeSlide  = slides.filter('.slider__item--active'),
+         var container    = selectedSlide.closest('.adaptive-slider'),
+             slides       = getChildrenElements(container, '.adaptive-slider', '.adaptive-slider__item'),
+             activeSlide  = slides.filter('.adaptive-slider__item--active'),
              slideWidth   = slides.width(),
              duration     = 500,
              leftPosition = 0,
@@ -175,20 +184,21 @@ var Slider = (function() {
          }
 
          selectedSlide.css('left', leftPosition)
-                      .addClass('slider__item--selected');
+            .addClass('adaptive-slider__item--selected');
 
          activeSlide.animate({left: offset}, duration);
 
          selectedSlide.animate({left: 0}, duration, function() {
-            var $this        = $(this),
-                container    = $this.closest('.slider');
+            var $this            = $(this),
+                container        = $this.closest('.adaptive-slider'),
+                togglesContainer = getChildrenElements(container, '.adaptive-slider', '.adaptive-slider__toggles');
 
             slides.css('left', 0)
-                  .removeClass('slider__item--active');
+               .removeClass('adaptive-slider__item--active');
 
-            $this.toggleClass('slider__item--selected slider__item--active');
+            $this.toggleClass('adaptive-slider__item--selected adaptive-slider__item--active');
 
-            Slider._setActiveToggle(container.find('.slider__toggles'));
+            Slider._setActiveToggle(togglesContainer);
 
             setAnimationState(container, false);
 
@@ -198,17 +208,17 @@ var Slider = (function() {
 
 
       /*
-      * CREATE TOGGLES
-      * */
+       * CREATE TOGGLES
+       * */
       _createToggles: function() {
 
-         var containers = $('.slider'),
-             toggleMarkup = '<li class="slider__toggle"></li>';
+         var containers = $('.adaptive-slider'),
+             toggleMarkup = '<li class="adaptive-slider__toggle"></li>';
 
          containers.each(function() {
             var $this            = $(this),
-                slides           = $this.find('.slider__item'),
-                togglesContainer = $this.find('.slider__toggles'),
+                slides           = getChildrenElements($this, '.adaptive-slider', '.adaptive-slider__item'),
+                togglesContainer = getChildrenElements($this, '.adaptive-slider', '.adaptive-slider__toggles'),
                 useToggles       = $this.data("toggles");
 
             if (!useToggles) return;
@@ -229,14 +239,14 @@ var Slider = (function() {
        * */
       _createControls: function() {
 
-         var containers     = $('.slider'),
+         var containers     = $('.adaptive-slider'),
              controlsMarkup = '\
-               <div class="slider__controls-button slider__controls-button--next">&gt</div> \
-               <div class="slider__controls-button slider__controls-button--prev">&lt</div>';
+               <div class="adaptive-slider__controls-button adaptive-slider__controls-button--next">&gt</div> \
+               <div class="adaptive-slider__controls-button adaptive-slider__controls-button--prev">&lt</div>';
 
          containers.each(function() {
             var $this             = $(this),
-                controlsContainer = $this.find('.slider__controls'),
+                controlsContainer = getChildrenElements($this, '.adaptive-slider', '.adaptive-slider__controls'),
                 useControls       = $this.data("controls");
 
             if (useControls) {
@@ -249,17 +259,18 @@ var Slider = (function() {
 
 
       /*
-      * SET ACTIVE TOGGLE
-      * */
+       * SET ACTIVE TOGGLE
+       * */
       _setActiveToggle: function(togglesContainer) {
 
-         var slides = togglesContainer.closest('.slider').find('.slider__item');
+         var container = togglesContainer.closest('.adaptive-slider'),
+             slides    = getChildrenElements(container, '.adaptive-slider', '.adaptive-slider__item'),
+             toggles   = togglesContainer.find('.adaptive-slider__toggle');
 
-         togglesContainer.find('.slider__toggle')
-                         .eq(slides.filter('.slider__item--active').index())
-                         .addClass('slider__toggle--active')
-                         .siblings()
-                         .removeClass('slider__toggle--active');
+         toggles.eq(slides.filter('.adaptive-slider__item--active').index())
+            .addClass('adaptive-slider__toggle--active')
+            .siblings()
+            .removeClass('adaptive-slider__toggle--active');
 
       }, // -> end _setActiveToggle
 
@@ -269,7 +280,7 @@ var Slider = (function() {
        * */
       _runAutoSwitch: function() {
 
-         var containers = $('.slider');
+         var containers = $('.adaptive-slider');
 
          containers.each(function() {
             var $this         = $(this),
@@ -284,15 +295,15 @@ var Slider = (function() {
 
 
       /*
-      * SET AUTO SWITCH
-      * */
+       * SET AUTO SWITCH
+       * */
       _setAutoSwitch: function(container, enable) {
 
          if (enable) {
             timerID = setInterval(function (data) {
 
-               var slides      = container.find('.slider__item'),
-                   activeSlide = slides.filter('.slider__item--active'),
+               var slides      = getChildrenElements(container, '.adaptive-slider', '.adaptive-slider__item'),
+                   activeSlide = slides.filter('.adaptive-slider__item--active'),
                    nextSlide   = activeSlide.next(),
                    firstSlide  = slides.first();
 
@@ -314,8 +325,8 @@ var Slider = (function() {
 
 
       /*
-      * RESET TIMER
-      * */
+       * RESET TIMER
+       * */
       _resetTimer: function(container) {
          if (container) {
             var useAutoSwitch = container.data("autoswitch");
@@ -333,7 +344,7 @@ var Slider = (function() {
 
 $(document).ready(function() {
 
-   if ($('.slider').length) {
+   if ($('.adaptive-slider').length) {
       Slider.init();
    }
 
