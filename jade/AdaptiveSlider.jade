@@ -1,22 +1,22 @@
 
-mixin AdaptiveSlider(images, options)
+mixin AdaptiveSlider(id, images, options)
 
     - var toggles    = options && options.toggles    || "true";
     - var controls   = options && options.controls   || "true";
     - var autoswitch = options && options.autoswitch || "true";
 
     //- Slider block
-    div.slider(data-toggles=toggles data-controls=controls data-autoswitch=autoswitch)
-        div.slider__container
+    div.adaptive-slider(id=id data-toggles=toggles data-controls=controls data-autoswitch=autoswitch class=options.active)
+        div.adaptive-slider__container
             //- Slides list
-            ul.slider__list
+            ul.adaptive-slider__list
                 - for (var i = 0; i < images.length; i++)
                     //- Slide
-                    li.slider__item( class=(i == 0 ? "slider__item--active" : "") )
-                        img.slider__image( src=images[i] alt="" width="100%" )
+                    li.adaptive-slider__item( class=(i == 0 ? "adaptive-slider__item--active" : "") )
+                        img.adaptive-slider__image( src=images[i] alt="" width="100%" )
 
             //- Toggles. Create dynamically with JS
-            ul.slider__toggles
+            ul.adaptive-slider__toggles
 
         //- Arrows. Create dynamically with JS
-        div.slider__controls
+        div.adaptive-slider__controls

@@ -12,10 +12,10 @@ html
         //- Container for slider positioning
         div.slider-layout
             - var images = ["images/slider-image-1.jpg", "images/slider-image-2.jpg", "images/slider-image-3.jpg", "images/slider-image-4.jpg"];
-            +AdaptiveSlider(images, {controls: "false", autoswitch: "true"})
+            +AdaptiveSlider("slider-1", images, {controls: "false", autoswitch: "true"})
 
         div.slider-layout
-            +AdaptiveSlider(images, {autoswitch: "false"})
+            +AdaptiveSlider("slider-2", images, {autoswitch: "false"})
 
         script(src="//code.jquery.com/jquery-2.1.4.min.js" defer)
         script(src="js/slider.js" defer)

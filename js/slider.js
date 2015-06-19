@@ -4,7 +4,7 @@
 
 var Slider = (function() {
 
-   var autoSwitchInterval  = 5000,
+   var autoSwitchInterval  = 3000,
        animatingContainers = [],
        timers              = [];
 
