@@ -7,7 +7,10 @@ mixin AdaptiveSlider(id, images, options)
 
     //- Slider block
     div.adaptive-slider(id=id data-toggles=toggles data-controls=controls data-autoswitch=autoswitch class=options.active)
+        
+        // begin adaptive-slider__container
         div.adaptive-slider__container
+            
             //- Slides list
             ul.adaptive-slider__list
                 - for (var i = 0; i < images.length; i++)
@@ -17,6 +20,8 @@ mixin AdaptiveSlider(id, images, options)
 
             //- Toggles. Create dynamically with JS
             ul.adaptive-slider__toggles
-
+            
+        // end adaptive-slider__container
+        
         //- Arrows. Create dynamically with JS
         div.adaptive-slider__controls

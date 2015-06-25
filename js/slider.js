@@ -76,10 +76,11 @@ var Slider = (function() {
 
    /*
     * GET CHILDREN ELEMENTS
+    * Функция возвращает элементы, ближайший parentSelector которых указанный container
     * */
    function getChildrenElements(container, parentSelector, childrenSelector) {
       return container.find(childrenSelector).filter(function(index) {
-         return this.closest(parentSelector) === container[0];
+         return $(this).closest(parentSelector)[0] === container[0];
       })
    }
 
@@ -141,7 +142,8 @@ var Slider = (function() {
                 toggles       = $this.closest('.adaptive-slider__toggles').find('.adaptive-slider__toggle'),
                 activeToggle  = toggles.filter('.adaptive-slider__toggle--active'),
                 direction     = ($this.index() > activeToggle.index()) ? 'forward' : 'backward',
-                selectedSlide = $this.closest('.adaptive-slider').find('.adaptive-slider__item').eq($this.index());
+                slides        = getChildrenElements(container, '.adaptive-slider', '.adaptive-slider__item'),
+                selectedSlide = slides.eq($this.index());
 
             if (!$this.hasClass('adaptive-slider__toggle--active')) {
                Slider._resetTimer(container);
