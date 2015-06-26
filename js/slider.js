@@ -417,13 +417,4 @@ var Slider = (function () {
 
 // -> end class Slider
 
-$(document).ready(function () {
-
-   if ($('.adaptive-slider').length) {
-
-      var slider = new Slider();
-      slider.init();
-   }
-});
-
 //# sourceMappingURL=slider.js.map
