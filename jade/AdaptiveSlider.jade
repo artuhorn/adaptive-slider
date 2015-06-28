@@ -1,5 +1,5 @@
 
-mixin AdaptiveSlider(id, images, options)
+mixin AdaptiveSlider(id, count, options)
 
     - var toggles    = options && options.toggles    || "true";
     - var controls   = options && options.controls   || "true";
@@ -13,7 +13,7 @@ mixin AdaptiveSlider(id, images, options)
             
             //- Slides list
             ul.adaptive-slider__list
-                - for (var i = 0; i < images.length; i++)
+                - for (var i = 0; i < count; i++)
                     //- Slide
                     li.adaptive-slider__item( class=(i == 0 ? "adaptive-slider__item--active" : "") )
                         img.adaptive-slider__image( src="//lorempixel.com/600/200/nature" alt="" width="100%" )
